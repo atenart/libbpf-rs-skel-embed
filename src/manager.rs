@@ -1,30 +1,27 @@
-use std::mem::MaybeUninit;
-
 use anyhow::{anyhow, Result};
-use libbpf_rs::skel::{OpenSkel, Skel, SkelBuilder};
+use libbpf_rs::skel::Skel;
 
 mod bpf {
     include!("bpf/kprobe.skel.rs");
 }
 use bpf::*;
 
+use crate::workaround::*;
+
 pub(crate) struct KprobeManager<'a> {
-    storage: Box<MaybeUninit<libbpf_rs::OpenObject>>,
-    skel: KprobeSkel<'a>,
+    skel: SkelStorage<KprobeSkel<'a>>,
     links: Vec<libbpf_rs::Link>,
 }
 
 impl KprobeManager<'_> {
     pub(crate) fn new() -> Result<Self> {
-        let mut storage = Box::new(MaybeUninit::uninit());
-        let skel = KprobeSkelBuilder::default().open(&mut storage)?;
+        let mut skel = OpenSkelStorage::new::<KprobeSkelBuilder>()?;
 
         // Set rodata.
         skel.maps.rodata_data.log_level = 0;
 
         Ok(Self {
-            storage,
-            skel: skel.load()?,
+            skel: SkelStorage::load(skel)?,
             links: Vec::new(),
         })
     }

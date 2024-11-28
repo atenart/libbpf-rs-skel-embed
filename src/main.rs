@@ -3,6 +3,8 @@ use anyhow::Result;
 mod manager;
 use manager::*;
 
+mod workaround;
+
 fn main() -> Result<()> {
     let mut mgr = KprobeManager::new()?;
 
