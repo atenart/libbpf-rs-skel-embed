@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0"
-libbpf-rs = "0.22"
+libbpf-rs = "0.24"
 
 [build-dependencies]
-libbpf-cargo = "0.22"
+libbpf-cargo = "0.24"
